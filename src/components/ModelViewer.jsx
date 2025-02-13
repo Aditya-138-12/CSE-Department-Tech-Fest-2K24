@@ -1,6 +1,6 @@
 import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { a, useSpring, animated } from '@react-spring/three';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useCursor, Text, Float, Detailed } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -14,6 +14,8 @@ const Model = ({ url }) => {
   const [objectPosition, setObjectPosition] = useState(null);
   const [objectPositionObject22, setobjectPositionObject22] = useState(null);
   const [objectPositionObject90, setobjectPositionObject90] = useState(null);
+  const [videoPosition, setVideoPosition] = useState(null);
+
 
   const navigate = useNavigate();
 
@@ -146,6 +148,7 @@ const Model = ({ url }) => {
         onPointerOut={handlePointerOut}
         onClick={(e) => handleClick(e)}
       />
+
       {objectPosition && (
         <group position={objectPosition}>
           {/* Circle Background */}
@@ -242,12 +245,60 @@ const LoadingBox = ({ progress }) => {
   );
 };
 
+const CameraControls = () => {
+  const { camera } = useThree();
+  const moveSpeed = 0.1;
+  const [keys, setKeys] = useState({});
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      setKeys(prev => ({ ...prev, [e.key.toLowerCase()]: true }));
+    };
+
+    const handleKeyUp = (e) => {
+      setKeys(prev => ({ ...prev, [e.key.toLowerCase()]: false }));
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  useFrame(() => {
+    // Forward/Backward
+    if (keys['w']) camera.translateZ(-moveSpeed);
+    if (keys['s']) camera.translateZ(moveSpeed);
+
+    // Left/Right
+    if (keys['a']) camera.translateX(-moveSpeed);
+    if (keys['d']) camera.translateX(moveSpeed);
+
+    // Up/Down
+    if (keys['q']) camera.translateY(moveSpeed);
+    if (keys['e']) camera.translateY(-moveSpeed);
+
+    // Rotation
+    if (keys['arrowleft']) camera.rotateY(0.02);
+    if (keys['arrowright']) camera.rotateY(-0.02);
+    if (keys['arrowup']) camera.rotateX(0.02);
+    if (keys['arrowdown']) camera.rotateX(-0.02);
+  });
+
+  return null;
+};
+
 
 const ModelViewer = () => {
   const [error, setError] = useState(null);
   const modelPath = '/models/isometric_bedroom.glb';
   const [showModel, setShowModel] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [freeCameraMode, setFreeCameraMode] = useState(false);
+  const controlsRef = useRef();
 
 
   useEffect(() => {
@@ -305,11 +356,12 @@ const ModelViewer = () => {
           )}
 
           <OrbitControls
+            ref={controlsRef}
+            enabled={!freeCameraMode}
             enablePan={false}
             enableZoom={false}
             enableRotate={true}
             autoRotate={false}
-
             maxPolarAngle={Math.PI / 3}
             minPolarAngle={Math.PI / 3}
           />
@@ -320,5 +372,6 @@ const ModelViewer = () => {
 };
 
 useGLTF.preload('/models/isometric_bedroom.glb');
+
 
 export default ModelViewer;
