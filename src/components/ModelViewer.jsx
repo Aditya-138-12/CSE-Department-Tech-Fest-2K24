@@ -6,6 +6,27 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { useNavigate } from 'react-router-dom';
 
+
+const isWebGLSupported = () => {
+  try{
+    const canvas = document.createElement("canvas");
+    canvas.height = 0;
+    canvas.width = 0;
+    if(!window.WebGLRenderingContext){
+      return false;
+    }
+
+    const webgl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl"); 
+    if(!webgl){
+      return false
+    }
+
+    return true;
+    
+  }catch(e){return false;}
+}
+
+
 const Model = ({ url }) => {
   const { scene } = useGLTF(url);
   const [originalMaterial, setOriginalMaterial] = useState(null);
