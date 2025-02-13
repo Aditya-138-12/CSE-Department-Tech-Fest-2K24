@@ -8,22 +8,22 @@ import { useNavigate } from 'react-router-dom';
 
 
 const isWebGLSupported = () => {
-  try{
+  try {
     const canvas = document.createElement("canvas");
     canvas.height = 0;
     canvas.width = 0;
-    if(!window.WebGLRenderingContext){
+    if (!window.WebGLRenderingContext) {
       return false;
     }
 
-    const webgl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl"); 
-    if(!webgl){
+    const webgl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!webgl) {
       return false
     }
 
     return true;
-    
-  }catch(e){return false;}
+
+  } catch (e) { return false; }
 }
 
 
@@ -42,7 +42,7 @@ const Model = ({ url }) => {
 
   useEffect(() => {
     if (scene) {
-      scene.position.set(0, 0, 0);
+      scene.position.set(-7, 0, -7);
       scene.scale.set(1, 1, 1);
 
       const targetObj = scene.getObjectByName('Object_16');
@@ -266,56 +266,10 @@ const LoadingBox = ({ progress }) => {
   );
 };
 
-const CameraControls = () => {
-  const { camera } = useThree();
-  const moveSpeed = 0.1;
-  const [keys, setKeys] = useState({});
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      setKeys(prev => ({ ...prev, [e.key.toLowerCase()]: true }));
-    };
-
-    const handleKeyUp = (e) => {
-      setKeys(prev => ({ ...prev, [e.key.toLowerCase()]: false }));
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-
-  useFrame(() => {
-    // Forward/Backward
-    if (keys['w']) camera.translateZ(-moveSpeed);
-    if (keys['s']) camera.translateZ(moveSpeed);
-
-    // Left/Right
-    if (keys['a']) camera.translateX(-moveSpeed);
-    if (keys['d']) camera.translateX(moveSpeed);
-
-    // Up/Down
-    if (keys['q']) camera.translateY(moveSpeed);
-    if (keys['e']) camera.translateY(-moveSpeed);
-
-    // Rotation
-    if (keys['arrowleft']) camera.rotateY(0.02);
-    if (keys['arrowright']) camera.rotateY(-0.02);
-    if (keys['arrowup']) camera.rotateX(0.02);
-    if (keys['arrowdown']) camera.rotateX(-0.02);
-  });
-
-  return null;
-};
-
 
 const ModelViewer = () => {
   const [error, setError] = useState(null);
-  const modelPath = '/models/isometric_bedroom.glb';
+  const modelPath = '/models/sjcit_cse_fest_model.glb';
   const [showModel, setShowModel] = useState(false);
   const [progress, setProgress] = useState(0);
   const [freeCameraMode, setFreeCameraMode] = useState(false);
@@ -365,22 +319,22 @@ const ModelViewer = () => {
           onError={handleError}
         >
           <ambientLight intensity={0.7} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} />
+          <spotLight position={[-5, 0, -5]} angle={0.15} penumbra={1} intensity={1} />
+          <pointLight position={[-5, 10, -7]} intensity={50} />
 
           {!showModel ? (
             <LoadingBox progress={progress} />
           ) : (
             <Suspense fallback={null}>
-              <Model url={"/models/isometric_bedroom.glb"} />
+              <Model url={"/models/sjcit_cse_fest_model.glb"} />
             </Suspense>
           )}
 
           <OrbitControls
             ref={controlsRef}
             enabled={!freeCameraMode}
-            enablePan={false}
-            enableZoom={false}
+            enablePan={true}
+            enableZoom={true}
             enableRotate={true}
             autoRotate={false}
             maxPolarAngle={Math.PI / 3}
@@ -392,7 +346,7 @@ const ModelViewer = () => {
   );
 };
 
-useGLTF.preload('/models/isometric_bedroom.glb');
+useGLTF.preload('/models/sjcit_cse_fest_model.glb');
 
 
 export default ModelViewer;
