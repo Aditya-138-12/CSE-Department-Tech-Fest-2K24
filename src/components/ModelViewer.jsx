@@ -269,7 +269,7 @@ const LoadingBox = ({ progress }) => {
 
 const ModelViewer = () => {
   const [error, setError] = useState(null);
-  const modelPath = '/models/sjcit_cse_fest_model.glb';
+  const modelPath = '/models/computer_model.glb'; // No need to change, just for testing
   const [showModel, setShowModel] = useState(false);
   const [progress, setProgress] = useState(0);
   const [freeCameraMode, setFreeCameraMode] = useState(false);
@@ -318,15 +318,16 @@ const ModelViewer = () => {
           style={{ height: '100vh', width: '100vw', background: 'transparent' }}
           onError={handleError}
         >
-          <ambientLight intensity={0.7} />
+          <ambientLight intensity={1} />
           <spotLight position={[-5, 0, -5]} angle={0.15} penumbra={1} intensity={1} />
           <pointLight position={[-5, 10, -7]} intensity={50} />
+          <hemisphereLight position={[-7, -10, -7]} skyColor="white" groundColor="gray" intensity={10} />
 
           {!showModel ? (
             <LoadingBox progress={progress} />
           ) : (
             <Suspense fallback={null}>
-              <Model url={"/models/sjcit_cse_fest_model.glb"} />
+              <Model url={"/models/model.glb"} />
             </Suspense>
           )}
 
@@ -346,7 +347,7 @@ const ModelViewer = () => {
   );
 };
 
-useGLTF.preload('/models/sjcit_cse_fest_model.glb');
+useGLTF.preload('/models/model.glb');
 
 
 export default ModelViewer;
